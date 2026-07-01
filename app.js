@@ -715,22 +715,54 @@ document.addEventListener('DOMContentLoaded', () => {
   function downloadCardFace(elementId, filename) {
     const element = document.getElementById(elementId);
     
-    // Temporarily disable CSS 3D flip card styles on capture to prevent canvas distortion/empty capture
-    const wasFlipped = cardContainer.classList.contains('flipped');
-    cardContainer.classList.remove('flipped');
+    // Create a temporary clone for clean capturing without 3D transforms
+    const clone = element.cloneNode(true);
     
-    // Create capturing wrapper overlay
+    // Remove 3D transform rotations that cause mirroring/flipping in html2canvas
+    clone.style.transform = 'none';
+    clone.style.webkitTransform = 'none';
+    clone.style.backfaceVisibility = 'visible';
+    clone.style.webkitBackfaceVisibility = 'visible';
+    
+    // Position invisibly in active viewport so mobile browsers render it
+    clone.style.position = 'fixed';
+    clone.style.top = '0';
+    clone.style.left = '0';
+    clone.style.opacity = '0.001';
+    clone.style.pointerEvents = 'none';
+    clone.style.zIndex = '-9999';
+    
+    // Copy computed viewport dimensions
+    clone.style.width = '440px';
+    clone.style.height = '277px';
+    
+    document.body.appendChild(clone);
+
+    // If capturing back face, copy complete QR code DOM elements directly
+    if (elementId === 'cardBackSide') {
+      const clonedQRContainer = clone.querySelector('#cardQrCode');
+      if (clonedQRContainer) {
+        clonedQRContainer.innerHTML = cardQrCodeContainer.innerHTML;
+        // Ensure image fits container exactly
+        const qrImg = clonedQRContainer.querySelector('img');
+        if (qrImg) {
+          qrImg.style.width = '84px';
+          qrImg.style.height = '84px';
+        }
+      }
+    }
+    
     showAlert('Rendering card high-res canvas...', 'info');
     
     setTimeout(() => {
-      html2canvas(element, {
-        scale: 2,               // Double scale for high-res crisp typography
+      html2canvas(clone, {
+        scale: 2.5,             // High resolution for clear text
         useCORS: true,          // Allow loading external image assets/CDNs
         allowTaint: true,
         backgroundColor: null   // Maintain transparent card corners
       }).then(canvas => {
-        // Re-flip card if it was flipped prior
-        if (wasFlipped) cardContainer.classList.add('flipped');
+        // Remove clone from DOM
+        document.body.removeChild(clone);
         
         try {
           const link = document.createElement('a');
@@ -743,8 +775,14 @@ document.addEventListener('DOMContentLoaded', () => {
           showAlert('Failed to convert canvas to image.', 'error');
           console.error(e);
         }
+      }).catch(err => {
+        if (document.body.contains(clone)) {
+          document.body.removeChild(clone);
+        }
+        showAlert('Error generating card image.', 'error');
+        console.error(err);
       });
-    }, 300);
+    }, 250);
   }
 
   // Front download
@@ -758,11 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
   downloadBackBtn.addEventListener('click', () => {
     initAudio();
     const petName = petNameInput.value.trim() || 'pet';
-    // Must force flip back before taking screenshot so layout is visible
-    cardContainer.classList.add('flipped');
-    setTimeout(() => {
-      downloadCardFace('cardBackSide', `${petName.toLowerCase()}_pawdhaar_back.png`);
-    }, 300);
+    downloadCardFace('cardBackSide', `${petName.toLowerCase()}_pawdhaar_back.png`);
   });
 
   // Combined (Front + Back side-by-side) download
@@ -774,8 +808,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create a temporary hidden side-by-side layout in the DOM
     const wrapper = document.createElement('div');
     wrapper.style.position = 'fixed';
-    wrapper.style.left = '-9999px';
-    wrapper.style.top = '-9999px';
+    wrapper.style.left = '0';
+    wrapper.style.top = '0';
+    wrapper.style.opacity = '0.001';
+    wrapper.style.zIndex = '-9999';
+    wrapper.style.pointerEvents = 'none';
     wrapper.style.display = 'flex';
     wrapper.style.gap = '20px';
     wrapper.style.padding = '20px';
@@ -790,34 +827,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Override transforms & sizes for clones so they stand flat side-by-side
     frontClone.style.position = 'relative';
     frontClone.style.transform = 'none';
+    frontClone.style.webkitTransform = 'none';
+    frontClone.style.backfaceVisibility = 'visible';
+    frontClone.style.webkitBackfaceVisibility = 'visible';
     frontClone.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
     frontClone.style.width = '440px';
     frontClone.style.height = '277px';
 
     backClone.style.position = 'relative';
     backClone.style.transform = 'none';
+    backClone.style.webkitTransform = 'none';
+    backClone.style.backfaceVisibility = 'visible';
+    backClone.style.webkitBackfaceVisibility = 'visible';
     backClone.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
     backClone.style.width = '440px';
     backClone.style.height = '277px';
+
+    // Copy complete QR code HTML directly to prevent missing QR code on mobile
+    const clonedQRContainer = backClone.querySelector('#cardQrCode');
+    if (clonedQRContainer) {
+      clonedQRContainer.innerHTML = cardQrCodeContainer.innerHTML;
+      const qrImg = clonedQRContainer.querySelector('img');
+      if (qrImg) {
+        qrImg.style.width = '84px';
+        qrImg.style.height = '84px';
+      }
+    }
 
     wrapper.appendChild(frontClone);
     wrapper.appendChild(backClone);
     document.body.appendChild(wrapper);
 
-    // Make sure cloned QR code renders correctly
-    const originalQRImg = cardQrCodeContainer.querySelector('img');
-    if (originalQRImg) {
-      const clonedQRContainer = backClone.querySelector('#cardQrCode');
-      clonedQRContainer.innerHTML = '';
-      const qrCopy = originalQRImg.cloneNode(true);
-      qrCopy.style.width = '78px';
-      qrCopy.style.height = '78px';
-      clonedQRContainer.appendChild(qrCopy);
-    }
-
     setTimeout(() => {
       html2canvas(wrapper, {
-        scale: 2,
+        scale: 2.2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#f8f6f0'
@@ -834,8 +877,14 @@ document.addEventListener('DOMContentLoaded', () => {
           showAlert('Failed to download combined image.', 'error');
           console.error(e);
         }
+      }).catch(err => {
+        if (document.body.contains(wrapper)) {
+          document.body.removeChild(wrapper);
+        }
+        showAlert('Error composing combined image.', 'error');
+        console.error(err);
       });
-    }, 450);
+    }, 300);
   });
 
   // ==========================================================================

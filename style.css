@@ -1439,7 +1439,9 @@ body {
 
 @media (max-width: 1024px) {
   .main-container {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column-reverse; /* Put preview card panel on top */
+    gap: 1.5rem;
     max-width: 650px;
     margin: 0 auto;
   }
