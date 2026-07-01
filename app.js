@@ -427,23 +427,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const imgDataUrl = event.target.result;
-      
-      // Set to upload preview
-      uploadPreviewImage.src = imgDataUrl;
-      uploadPrompt.style.display = 'none';
-      uploadPreviewContainer.style.display = 'flex';
-      
-      // Set to Aadhaar card image preview
-      cardPetPhoto.src = imgDataUrl;
-      cardPetPhoto.style.display = 'block';
-      photoPlaceholder.style.display = 'none';
-      
-      showAlert('Pet photo loaded successfully!', 'success');
-      playSynthSound('success');
-      
-      // Update preview QR (with base64 photo excluded to keep QR code size small and scannable)
-      updateCardPreview();
+      const img = new Image();
+      img.onload = () => {
+        // Resize image to passport proportions (max 300px) to prevent memory crashes on mobile devices
+        const maxDim = 300;
+        let w = img.width;
+        let h = img.height;
+        if (w > h) {
+          if (w > maxDim) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          }
+        } else {
+          if (h > maxDim) {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        
+        const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        
+        // Set to upload preview
+        uploadPreviewImage.src = optimizedDataUrl;
+        uploadPrompt.style.display = 'none';
+        uploadPreviewContainer.style.display = 'flex';
+        
+        // Set to Aadhaar card image preview
+        cardPetPhoto.src = optimizedDataUrl;
+        cardPetPhoto.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+        
+        showAlert('Pet photo loaded and optimized!', 'success');
+        playSynthSound('success');
+        updateCardPreview();
+      };
+      img.src = event.target.result;
     };
     reader.readAsDataURL(file);
   }
