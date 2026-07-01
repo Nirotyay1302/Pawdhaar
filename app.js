@@ -512,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
       
       // Verification URL
-      const verifyUrl = `${window.location.origin}${window.location.pathname}#verify/${b64}`;
+      const verifyUrl = `https://pawdhaar.vercel.app/#verify/${b64}`;
 
       // Reset QR container
       cardQrCodeContainer.innerHTML = '';
@@ -543,31 +543,43 @@ document.addEventListener('DOMContentLoaded', () => {
         const decodedStr = decodeURIComponent(escape(atob(b64Data)));
         const data = JSON.parse(decodedStr);
         
+        // Defensive Fallback Values
+        const petAadhaarNo = data.v || '2026XXXXXXXX';
+        const petNameVal = data.n || 'Rocky';
+        const petTypeVal = data.t || 'dog';
+        const petGenderVal = data.g || 'Male';
+        const petDobVal = data.d || '2026-01-01';
+        const petGuardianVal = data.u || 'Rahul Sharma';
+        const petContactVal = data.p || '9876543210';
+        const petAddressVal = data.a || '';
+        const petVacVal = data.vc || 'done';
+        const petDewVal = data.dw || 'done';
+
         // Hide generator, show verification screen
         appMain.style.display = 'none';
         verificationPanel.style.display = 'flex';
         
         // Render verification values
-        verifAadhaar.textContent = data.v.replace(/(\d{4})(\d{4})(\d{4})/, '$1 $2 $3');
-        verifName.textContent = data.n;
-        verifType.textContent = data.t.charAt(0).toUpperCase() + data.t.slice(1);
-        verifGender.textContent = `${data.g.toUpperCase()} / ${getGenderHindi(data.g)}`;
-        verifDob.textContent = formatDate(data.d);
-        verifGuardian.textContent = data.u;
-        verifContact.textContent = data.p;
+        verifAadhaar.textContent = petAadhaarNo.replace(/(\d{4})(\d{4})(\d{4})/, '$1 $2 $3');
+        verifName.textContent = petNameVal;
+        verifType.textContent = petTypeVal.charAt(0).toUpperCase() + petTypeVal.slice(1);
+        verifGender.textContent = `${petGenderVal.toUpperCase()} / ${getGenderHindi(petGenderVal)}`;
+        verifDob.textContent = formatDate(petDobVal);
+        verifGuardian.textContent = petGuardianVal;
+        verifContact.textContent = petContactVal;
         
         // Render health details
-        verifVaccinated.textContent = data.vc === 'done' ? 'Done ✅' : (data.vc === 'pending' ? 'Pending ❌' : 'Not Added ➖');
-        verifDewormed.textContent = data.dw === 'done' ? 'Done ✅' : (data.dw === 'pending' ? 'Pending ❌' : 'Not Added ➖');
+        verifVaccinated.textContent = petVacVal === 'done' ? 'Done ✅' : (petVacVal === 'pending' ? 'Pending ❌' : 'Not Added ➖');
+        verifDewormed.textContent = petDewVal === 'done' ? 'Done ✅' : (petDewVal === 'pending' ? 'Pending ❌' : 'Not Added ➖');
         
-        verifAddress.textContent = data.a;
+        verifAddress.textContent = petAddressVal;
 
         // Set animal avatar symbol according to type
         let avatarHtml = '<i class="fa-solid fa-paw"></i>';
-        if (data.t === 'dog') avatarHtml = '<i class="fa-solid fa-dog" style="color: var(--primary-color)"></i>';
-        else if (data.t === 'cat') avatarHtml = '<i class="fa-solid fa-cat" style="color: #9b59b6"></i>';
-        else if (data.t === 'rabbit') avatarHtml = '<i class="fa-solid fa-carrot" style="color: #e67e22"></i>';
-        else if (data.t === 'bird') avatarHtml = '<i class="fa-solid fa-crow" style="color: #3498db"></i>';
+        if (petTypeVal === 'dog') avatarHtml = '<i class="fa-solid fa-dog" style="color: var(--primary-color)"></i>';
+        else if (petTypeVal === 'cat') avatarHtml = '<i class="fa-solid fa-cat" style="color: #9b59b6"></i>';
+        else if (petTypeVal === 'rabbit') avatarHtml = '<i class="fa-solid fa-carrot" style="color: #e67e22"></i>';
+        else if (petTypeVal === 'bird') avatarHtml = '<i class="fa-solid fa-crow" style="color: #3498db"></i>';
         verifiedPetAvatar.innerHTML = avatarHtml;
 
         // Display current scan timestamp
