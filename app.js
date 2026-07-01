@@ -774,6 +774,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Clean duplicate IDs to prevent html2canvas rendering lookup confusion
+    clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+
     // Create a parent hierarchy wrapper to ensure CSS selectors apply correctly
     const containerWrapper = document.createElement('div');
     containerWrapper.className = 'flip-card-container';
@@ -915,6 +919,13 @@ document.addEventListener('DOMContentLoaded', () => {
         qrImg.style.height = '84px';
       }
     }
+
+    // Clean duplicate IDs to prevent html2canvas rendering lookup confusion
+    frontClone.removeAttribute('id');
+    frontClone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    
+    backClone.removeAttribute('id');
+    backClone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
 
     // Wrap clones inside standard flip containers to preserve CSS styles
     const frontContainer = document.createElement('div');
