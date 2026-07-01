@@ -1032,8 +1032,8 @@ body {
 }
 
 .qr-code-wrapper {
-  width: 78px;
-  height: 78px;
+  width: 84px;
+  height: 84px;
   background-color: #ffffff;
   padding: 3px;
   border: 1px solid #7f8c8d;
@@ -1045,6 +1045,8 @@ body {
 .qr-code-wrapper img {
   width: 100% !important;
   height: 100% !important;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .qr-caption {

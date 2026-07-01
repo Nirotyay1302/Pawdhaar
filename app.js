@@ -520,11 +520,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Generate using qrcode.js (from CDN)
       qrCodeInstance = new QRCode(cardQrCodeContainer, {
         text: verifyUrl,
-        width: 78,
-        height: 78,
+        width: 84,
+        height: 84,
         colorDark: "#000000",
         colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
+        correctLevel: QRCode.CorrectLevel.L
       });
     } catch (e) {
       console.error("QR Code generation error:", e);
