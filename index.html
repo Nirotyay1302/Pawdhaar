@@ -503,6 +503,19 @@
     </div>
   </footer>
 
+  <!-- Mobile Save Image Modal (For easy saving on iOS/Android) -->
+  <div class="mobile-save-modal" id="saveModal" style="display: none;">
+    <div class="save-modal-content">
+      <button type="button" class="close-modal-btn" id="closeSaveModalBtn">&times;</button>
+      <h3>🐾 Save Your Card 🐾</h3>
+      <p>Press and hold (long-press) the card image below and select <strong>"Save Image"</strong> or <strong>"Add to Photos"</strong> to download.</p>
+      <div class="save-image-container">
+        <img id="saveModalImage" src="" alt="Pet Aadhaar Card">
+      </div>
+      <button type="button" class="btn btn-action-card btn-outline" id="closeSaveModalBtn2" style="width: 100%; max-width: 150px; margin: 0 auto;">Close</button>
+    </div>
+  </div>
+
   <!-- JS Dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

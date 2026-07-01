@@ -212,6 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const verificationTime = document.getElementById('verificationTime');
   const goToGeneratorBtn = document.getElementById('goToGeneratorBtn');
 
+  // Mobile Save Modal Elements
+  const saveModal = document.getElementById('saveModal');
+  const saveModalImage = document.getElementById('saveModalImage');
+  const closeSaveModalBtn = document.getElementById('closeSaveModalBtn');
+  const closeSaveModalBtn2 = document.getElementById('closeSaveModalBtn2');
+
   // Alert Container
   const alertContainer = document.getElementById('alertContainer');
 
@@ -725,6 +731,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 9. Download Export (html2canvas)
   // ==========================================================================
   
+  // Device detection to handle mobile export restrictions
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
   // Dropdown Toggler
   downloadDropdownBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -768,9 +777,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create a parent hierarchy wrapper to ensure CSS selectors apply correctly
     const containerWrapper = document.createElement('div');
     containerWrapper.className = 'flip-card-container';
+    containerWrapper.style.width = '440px';
+    containerWrapper.style.height = '277px';
     
     const innerWrapper = document.createElement('div');
     innerWrapper.className = 'flip-card-inner';
+    innerWrapper.style.width = '100%';
+    innerWrapper.style.height = '100%';
     innerWrapper.style.transform = 'none';
     innerWrapper.style.webkitTransform = 'none';
     
@@ -799,12 +812,23 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(containerWrapper);
         
         try {
-          const link = document.createElement('a');
-          link.download = filename;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-          showAlert('Download started!', 'success');
-          playSynthSound('success');
+          const imgData = canvas.toDataURL('image/png');
+          
+          if (isMobile) {
+            // Show mobile save modal
+            saveModalImage.src = imgData;
+            saveModal.style.display = 'flex';
+            showAlert('Card ready! Press & hold image to save.', 'success');
+            playSynthSound('success');
+          } else {
+            // Trigger direct desktop download
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = imgData;
+            link.click();
+            showAlert('Download started!', 'success');
+            playSynthSound('success');
+          }
         } catch (e) {
           showAlert('Failed to convert canvas to image.', 'error');
           console.error(e);
@@ -848,11 +872,15 @@ document.addEventListener('DOMContentLoaded', () => {
     wrapper.style.zIndex = '-9999';
     wrapper.style.pointerEvents = 'none';
     wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'row';
+    wrapper.style.flexWrap = 'nowrap';
     wrapper.style.gap = '20px';
     wrapper.style.padding = '20px';
     wrapper.style.background = '#f8f6f0';
     wrapper.style.borderRadius = '16px';
     wrapper.style.border = '1px solid #e5e0d4';
+    wrapper.style.width = '960px'; // Lock exact layout dimensions
+    wrapper.style.minWidth = '960px';
 
     // Clone Front and Back faces
     const frontClone = document.getElementById('cardFrontSide').cloneNode(true);
@@ -891,16 +919,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Wrap clones inside standard flip containers to preserve CSS styles
     const frontContainer = document.createElement('div');
     frontContainer.className = 'flip-card-container';
+    frontContainer.style.width = '440px';
+    frontContainer.style.height = '277px';
     const frontInner = document.createElement('div');
     frontInner.className = 'flip-card-inner';
+    frontInner.style.width = '100%';
+    frontInner.style.height = '100%';
     frontInner.style.transform = 'none';
     frontInner.appendChild(frontClone);
     frontContainer.appendChild(frontInner);
 
     const backContainer = document.createElement('div');
     backContainer.className = 'flip-card-container';
+    backContainer.style.width = '440px';
+    backContainer.style.height = '277px';
     const backInner = document.createElement('div');
     backInner.className = 'flip-card-inner';
+    backInner.style.width = '100%';
+    backInner.style.height = '100%';
     backInner.style.transform = 'none';
     backInner.appendChild(backClone);
     backContainer.appendChild(backInner);
@@ -917,12 +953,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }).then(canvas => {
         document.body.removeChild(wrapper);
         try {
-          const link = document.createElement('a');
-          link.download = `${petName.toLowerCase()}_pawdhaar_combined.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-          showAlert('Combined download started!', 'success');
-          playSynthSound('success');
+          const imgData = canvas.toDataURL('image/png');
+          
+          if (isMobile) {
+            // Show mobile save modal
+            saveModalImage.src = imgData;
+            saveModal.style.display = 'flex';
+            showAlert('Card ready! Press & hold image to save.', 'success');
+            playSynthSound('success');
+          } else {
+            // Trigger direct desktop download
+            const link = document.createElement('a');
+            link.download = `${petName.toLowerCase()}_pawdhaar_combined.png`;
+            link.href = imgData;
+            link.click();
+            showAlert('Combined download started!', 'success');
+            playSynthSound('success');
+          }
         } catch (e) {
           showAlert('Failed to download combined image.', 'error');
           console.error(e);
@@ -935,6 +982,21 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error(err);
       });
     }, 300);
+  });
+
+  // Close Save Modal Event Listeners
+  const closeSaveModal = () => {
+    saveModal.style.display = 'none';
+    saveModalImage.src = '';
+  };
+  
+  closeSaveModalBtn.addEventListener('click', closeSaveModal);
+  closeSaveModalBtn2.addEventListener('click', closeSaveModal);
+  
+  saveModal.addEventListener('click', (e) => {
+    if (e.target === saveModal) {
+      closeSaveModal();
+    }
   });
 
   // ==========================================================================
