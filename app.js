@@ -507,12 +507,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
-      // Base64 encode JSON payload
-      const jsonStr = JSON.stringify(petData);
-      const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      // Use URLSearchParams to generate a clean, short, URL-safe query string payload
+      const params = new URLSearchParams({
+        n: petName,
+        t: petType,
+        g: gender,
+        d: dob,
+        u: guardianName,
+        p: phone,
+        a: address,
+        v: generatedAadhaar,
+        vc: petVaccinatedSelect.value,
+        dw: petDewormedSelect.value
+      });
       
       // Verification URL
-      const verifyUrl = `https://pawdhaar.vercel.app/#verify/${b64}`;
+      const verifyUrl = `https://pawdhaar.vercel.app/#verify?${params.toString()}`;
 
       // Reset QR container
       cardQrCodeContainer.innerHTML = '';
@@ -536,24 +546,48 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   function handleHashRoute() {
     const hash = window.location.hash;
-    if (hash.startsWith('#verify/')) {
-      const b64Data = hash.replace('#verify/', '');
+    if (hash.startsWith('#verify?') || hash.startsWith('#verify/')) {
+      let petAadhaarNo = '2026XXXXXXXX';
+      let petNameVal = 'Rocky';
+      let petTypeVal = 'dog';
+      let petGenderVal = 'Male';
+      let petDobVal = '2026-01-01';
+      let petGuardianVal = 'Rahul Sharma';
+      let petContactVal = '9876543210';
+      let petAddressVal = '';
+      let petVacVal = 'done';
+      let petDewVal = 'done';
+
       try {
-        // Decode base64 payload back to JSON
-        const decodedStr = decodeURIComponent(escape(atob(b64Data)));
-        const data = JSON.parse(decodedStr);
-        
-        // Defensive Fallback Values
-        const petAadhaarNo = data.v || '2026XXXXXXXX';
-        const petNameVal = data.n || 'Rocky';
-        const petTypeVal = data.t || 'dog';
-        const petGenderVal = data.g || 'Male';
-        const petDobVal = data.d || '2026-01-01';
-        const petGuardianVal = data.u || 'Rahul Sharma';
-        const petContactVal = data.p || '9876543210';
-        const petAddressVal = data.a || '';
-        const petVacVal = data.vc || 'done';
-        const petDewVal = data.dw || 'done';
+        if (hash.startsWith('#verify?')) {
+          // Parse query string (New format - low pixel density)
+          const params = new URLSearchParams(hash.substring(8)); // Skip "#verify?"
+          petAadhaarNo = params.get('v') || petAadhaarNo;
+          petNameVal = params.get('n') || petNameVal;
+          petTypeVal = params.get('t') || petTypeVal;
+          petGenderVal = params.get('g') || petGenderVal;
+          petDobVal = params.get('d') || petDobVal;
+          petGuardianVal = params.get('u') || petGuardianVal;
+          petContactVal = params.get('p') || petContactVal;
+          petAddressVal = params.get('a') || petAddressVal;
+          petVacVal = params.get('vc') || petVacVal;
+          petDewVal = params.get('dw') || petDewVal;
+        } else {
+          // Decode legacy base64 payload (Old format fallback)
+          const b64Data = hash.substring(8); // Skip "#verify/"
+          const decodedStr = decodeURIComponent(escape(atob(b64Data)));
+          const data = JSON.parse(decodedStr);
+          petAadhaarNo = data.v || petAadhaarNo;
+          petNameVal = data.n || petNameVal;
+          petTypeVal = data.t || petTypeVal;
+          petGenderVal = data.g || petGenderVal;
+          petDobVal = data.d || petDobVal;
+          petGuardianVal = data.u || petGuardianVal;
+          petContactVal = data.p || petContactVal;
+          petAddressVal = data.a || petAddressVal;
+          petVacVal = data.vc || petVacVal;
+          petDewVal = data.dw || petDewVal;
+        }
 
         // Hide generator, show verification screen
         appMain.style.display = 'none';
