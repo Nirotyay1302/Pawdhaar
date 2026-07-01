@@ -724,26 +724,15 @@ document.addEventListener('DOMContentLoaded', () => {
     clone.style.backfaceVisibility = 'visible';
     clone.style.webkitBackfaceVisibility = 'visible';
     
-    // Position invisibly in active viewport so mobile browsers render it
-    clone.style.position = 'fixed';
-    clone.style.top = '0';
-    clone.style.left = '0';
-    clone.style.opacity = '0.001';
-    clone.style.pointerEvents = 'none';
-    clone.style.zIndex = '-9999';
-    
     // Copy computed viewport dimensions
     clone.style.width = '440px';
     clone.style.height = '277px';
     
-    document.body.appendChild(clone);
-
-    // If capturing back face, copy complete QR code DOM elements directly
+    // Copy complete QR code DOM elements directly if capturing back side
     if (elementId === 'cardBackSide') {
       const clonedQRContainer = clone.querySelector('#cardQrCode');
       if (clonedQRContainer) {
         clonedQRContainer.innerHTML = cardQrCodeContainer.innerHTML;
-        // Ensure image fits container exactly
         const qrImg = clonedQRContainer.querySelector('img');
         if (qrImg) {
           qrImg.style.width = '84px';
@@ -751,18 +740,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
+
+    // Create a parent hierarchy wrapper to ensure CSS selectors apply correctly
+    const containerWrapper = document.createElement('div');
+    containerWrapper.className = 'flip-card-container';
+    
+    const innerWrapper = document.createElement('div');
+    innerWrapper.className = 'flip-card-inner';
+    innerWrapper.style.transform = 'none';
+    innerWrapper.style.webkitTransform = 'none';
+    
+    innerWrapper.appendChild(clone);
+    containerWrapper.appendChild(innerWrapper);
+    
+    // Hide wrapper in active viewport so mobile browsers render it
+    containerWrapper.style.position = 'fixed';
+    containerWrapper.style.top = '0';
+    containerWrapper.style.left = '0';
+    containerWrapper.style.opacity = '0.001';
+    containerWrapper.style.pointerEvents = 'none';
+    containerWrapper.style.zIndex = '-9999';
+    
+    document.body.appendChild(containerWrapper);
     
     showAlert('Rendering card high-res canvas...', 'info');
     
     setTimeout(() => {
       html2canvas(clone, {
         scale: 2.5,             // High resolution for clear text
-        useCORS: true,          // Allow loading external image assets/CDNs
-        allowTaint: true,
+        useCORS: true,          // Allow loading external images
         backgroundColor: null   // Maintain transparent card corners
       }).then(canvas => {
-        // Remove clone from DOM
-        document.body.removeChild(clone);
+        // Remove wrapper from DOM
+        document.body.removeChild(containerWrapper);
         
         try {
           const link = document.createElement('a');
@@ -776,8 +786,8 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error(e);
         }
       }).catch(err => {
-        if (document.body.contains(clone)) {
-          document.body.removeChild(clone);
+        if (document.body.contains(containerWrapper)) {
+          document.body.removeChild(containerWrapper);
         }
         showAlert('Error generating card image.', 'error');
         console.error(err);
@@ -805,7 +815,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const petName = petNameInput.value.trim() || 'pet';
     showAlert('Composing combined canvas...', 'info');
 
-    // Create a temporary hidden side-by-side layout in the DOM
+    // Create a temporary container hierarchy wrapper in the DOM
     const wrapper = document.createElement('div');
     wrapper.style.position = 'fixed';
     wrapper.style.left = '0';
@@ -854,15 +864,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    wrapper.appendChild(frontClone);
-    wrapper.appendChild(backClone);
+    // Wrap clones inside standard flip containers to preserve CSS styles
+    const frontContainer = document.createElement('div');
+    frontContainer.className = 'flip-card-container';
+    const frontInner = document.createElement('div');
+    frontInner.className = 'flip-card-inner';
+    frontInner.style.transform = 'none';
+    frontInner.appendChild(frontClone);
+    frontContainer.appendChild(frontInner);
+
+    const backContainer = document.createElement('div');
+    backContainer.className = 'flip-card-container';
+    const backInner = document.createElement('div');
+    backInner.className = 'flip-card-inner';
+    backInner.style.transform = 'none';
+    backInner.appendChild(backClone);
+    backContainer.appendChild(backInner);
+
+    wrapper.appendChild(frontContainer);
+    wrapper.appendChild(backContainer);
     document.body.appendChild(wrapper);
 
     setTimeout(() => {
       html2canvas(wrapper, {
         scale: 2.2,
         useCORS: true,
-        allowTaint: true,
         backgroundColor: '#f8f6f0'
       }).then(canvas => {
         document.body.removeChild(wrapper);
