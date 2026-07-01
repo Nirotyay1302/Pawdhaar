@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pawdhaar - Indian Style Pet Aadhaar Card Generator</title>
+  <!-- Google Fonts: Fredoka for playfulness, Outfit for standard text, Noto Sans Devanagari for authentic Hindi Aadhaar texts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Noto+Sans+Devanagari:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- CSS Styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Paw Prints Grid (Decorative) -->
+  <div class="paw-bg-decor" id="pawBgDecor"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="paw-aadhaar-logo">
+          <!-- A custom paw symbol that resembles the Aadhaar logo -->
+          <div class="paw-icon-wrap">
+            <i class="fa-solid fa-paw"></i>
+            <div class="logo-lines"></div>
+          </div>
+        </div>
+        <div class="logo-text">
+          <h1>Pawdhaar <span class="badge">पालतू आधार</span></h1>
+          <p>Unique Pet Identification Authority of India</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="soundToggle" class="btn-icon-toggle" title="Toggle Sound Effects">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button id="themeToggle" class="btn-icon-toggle" title="Toggle Dark/Light Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="app-main" id="appMain">
+    <div class="main-container">
+      
+      <!-- Left Panel: Form Input -->
+      <section class="panel form-panel">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-id-card-clip"></i> Pet Details Form</h2>
+          <p>Fill out the fields to create a unique Pawdhaar card for your pet.</p>
+        </div>
+        <form id="aadhaarForm" autocomplete="off" onsubmit="return false;">
+          
+          <!-- Pet Species / Category Selection -->
+          <div class="form-group pet-type-selector">
+            <label>Choose Pet Type <span class="required">*</span></label>
+            <div class="pet-type-options">
+              <input type="radio" name="petType" id="typeDog" value="dog" checked>
+              <label for="typeDog" class="pet-type-label">
+                <i class="fa-solid fa-dog"></i> Dog
+              </label>
+              
+              <input type="radio" name="petType" id="typeCat" value="cat">
+              <label for="typeCat" class="pet-type-label">
+                <i class="fa-solid fa-cat"></i> Cat
+              </label>
+
+              <input type="radio" name="petType" id="typeRabbit" value="rabbit">
+              <label for="typeRabbit" class="pet-type-label">
+                <i class="fa-solid fa-carrot"></i> Rabbit
+              </label>
+
+              <input type="radio" name="petType" id="typeBird" value="bird">
+              <label for="typeBird" class="pet-type-label">
+                <i class="fa-solid fa-crow"></i> Bird
+              </label>
+
+              <input type="radio" name="petType" id="typeOther" value="other">
+              <label for="typeOther" class="pet-type-label">
+                <i class="fa-solid fa-paw"></i> Other
+              </label>
+            </div>
+          </div>
+
+          <!-- Grid Fields -->
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="petName">Pet Name / पालतू का नाम <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-tag input-icon"></i>
+                <input type="text" id="petName" required placeholder="e.g. Rocky">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="guardianName">Guardian Name / अभिभावक <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-user-shield input-icon"></i>
+                <input type="text" id="guardianName" required placeholder="e.g. Rahul Sharma">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="petGender">Gender / लिंग <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-venus-mars input-icon"></i>
+                <select id="petGender" required>
+                  <option value="" disabled selected>Select Gender</option>
+                  <option value="Male">Male / पुरुष</option>
+                  <option value="Female">Female / महिला</option>
+                  <option value="Other">Other / अन्य</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="petDob">Date of Birth / जन्म तिथि <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-calendar input-icon"></i>
+                <input type="date" id="petDob" required>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="contactNumber">Contact Number / मोबाइल नंबर <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-phone input-icon"></i>
+                <input type="tel" id="contactNumber" required placeholder="10-digit mobile number" pattern="[0-9]{10}">
+              </div>
+              <small class="helper-text">Required to generate a unique 12-digit Aadhaar number</small>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="petAddress">Address / पता <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-house-chimney input-icon text-area-icon"></i>
+                <textarea id="petAddress" required placeholder="e.g. House No. 42, Bark Street, Sector 7, Pawtown, Delhi - 110001" rows="3"></textarea>
+              </div>
+            </div>
+
+            <!-- Health Status Toggle Fields -->
+            <div class="form-group">
+              <label for="petVaccinated">Vaccination Status / टीकाकरण <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-syringe input-icon"></i>
+                <select id="petVaccinated" required>
+                  <option value="done" selected>Done / पूर्ण ✅</option>
+                  <option value="pending">Pending / लंबित ❌</option>
+                  <option value="hide">Do Not Show / छिपाएं</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="petDewormed">Deworming Status / कृमिमुक्ति <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-bug-slash input-icon"></i>
+                <select id="petDewormed" required>
+                  <option value="done" selected>Done / पूर्ण ✅</option>
+                  <option value="pending">Pending / लंबित ❌</option>
+                  <option value="hide">Do Not Show / छिपाएं</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Pet Picture Upload -->
+            <div class="form-group full-width">
+              <label>Upload Pet Photo / फोटो <span class="required">*</span></label>
+              <div class="upload-zone" id="uploadZone">
+                <input type="file" id="petPhotoInput" accept="image/*" required style="display: none;">
+                <div class="upload-prompt" id="uploadPrompt">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <p>Drag and drop your pet's photo here, or <span>browse</span></p>
+                  <small>JPG, PNG or WEBP formats (Square crop works best)</small>
+                </div>
+                <div class="upload-preview-container" id="uploadPreviewContainer" style="display: none;">
+                  <img id="uploadPreviewImage" src="" alt="Preview">
+                  <button type="button" id="removePhotoBtn" class="btn-remove-photo"><i class="fa-solid fa-circle-xmark"></i> Remove</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="resetFormBtn" class="btn btn-secondary"><i class="fa-solid fa-arrows-rotate"></i> Reset Form</button>
+            <button type="button" id="generateBtn" class="btn btn-primary"><i class="fa-solid fa-circle-check"></i> Generate Pawdhaar</button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Right Panel: Card Preview -->
+      <section class="panel preview-panel">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-eye"></i> Live Pawdhaar Preview</h2>
+          <p>Watch your pet's Aadhaar card update in real-time as you type!</p>
+        </div>
+
+        <!-- 3D Flippable Card Container -->
+        <div class="card-display-area">
+          <div class="flip-card-container" id="cardContainer">
+            <div class="flip-card-inner" id="cardInner">
+              
+              <!-- FRONT SIDE -->
+              <div class="card-face card-front" id="cardFrontSide">
+                <!-- Tricolor Top Ribbon -->
+                <div class="card-top-ribbon">
+                  <div class="color-saffron"></div>
+                  <div class="color-white"></div>
+                  <div class="color-green"></div>
+                </div>
+
+                <!-- Card Header -->
+                <div class="card-header-inner">
+                  <div class="left-emblem">
+                    <i class="fa-solid fa-paw emblem-paw"></i>
+                  </div>
+                  <div class="center-banner">
+                    <div class="lang-hindi">भारतीय विशिष्ट पालतू पहचान प्राधिकरण</div>
+                    <div class="lang-english">Unique Pet Identification Authority of India</div>
+                  </div>
+                </div>
+
+                <!-- Card Content Layout -->
+                <div class="card-body">
+                  <!-- Photo Frame -->
+                  <div class="card-photo-area">
+                    <div class="photo-frame" id="cardPhotoFrame">
+                      <div class="photo-placeholder" id="photoPlaceholder">
+                        <i class="fa-solid fa-paw"></i>
+                      </div>
+                      <img id="cardPetPhoto" class="card-pet-photo" src="" alt="Pet Photo" style="display: none;">
+                    </div>
+                    <div class="card-seal">
+                      <svg width="40" height="40" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#2a6099" stroke-width="2" stroke-dasharray="3,3" />
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="#2a6099" stroke-width="1.5" />
+                        <path d="M 50,20 L 58,40 L 80,40 L 62,52 L 70,72 L 50,60 L 30,72 L 38,52 L 20,40 L 42,40 Z" fill="none" stroke="#2a6099" stroke-width="1.5" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Text Details (Middle Column) -->
+                  <div class="card-details-area">
+                    <div class="detail-row">
+                      <span class="label-hi">नाम / Name:</span>
+                      <span class="value-name" id="cardNameVal">Rocky</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                      <span class="label-hi">जन्म तिथि / DOB:</span>
+                      <span class="value-dob" id="cardDobVal">01/01/2026</span>
+                    </div>
+
+                    <div class="detail-row">
+                      <span class="label-hi">लिंग / Gender:</span>
+                      <span class="value-gender" id="cardGenderVal">MALE / पुरुष</span>
+                    </div>
+
+                    <div class="detail-row">
+                      <span class="label-hi">अभिभावक / Guardian:</span>
+                      <span class="value-guardian" id="cardGuardianVal">Rahul Sharma</span>
+                    </div>
+
+                    <div class="detail-row">
+                      <span class="label-hi">संपर्क / Contact:</span>
+                      <span class="value-contact" id="cardContactValFront">9876543210</span>
+                    </div>
+                  </div>
+
+                  <!-- Vertical Divider Line -->
+                  <div class="card-vertical-divider"></div>
+
+                  <!-- Health Info (Right Side Column) -->
+                  <div class="card-health-area">
+                    <div class="health-header">पालतू स्वास्थ्य जानकारी / Pet Health Info</div>
+                    
+                    <div class="health-status-item" id="cardVaccinationRow">
+                      <div class="health-status-info">
+                        <span class="health-status-lbl">Vaccination</span>
+                        <span class="health-status-val" id="cardVaccinationVal">Done ✅</span>
+                      </div>
+                    </div>
+
+                    <div class="health-status-item" id="cardDewormingRow">
+                      <div class="health-status-info">
+                        <span class="health-status-lbl">Deworming</span>
+                        <span class="health-status-val" id="cardDewormingVal">Done ✅</span>
+                      </div>
+                    </div>
+
+                    <!-- Paw Sign (Bottom Right of Health column) -->
+                    <div class="card-front-paw-logo-inside">
+                      <i class="fa-solid fa-paw"></i>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Aadhaar Number (12 Digit) -->
+                <div class="card-number-section">
+                  <span class="card-number" id="cardAadhaarNoVal">2026 9876 3210</span>
+                </div>
+
+                <!-- Card Footer Ribbon -->
+                <div class="card-footer-ribbon">
+                  <span class="footer-website">www.pawdhaar.gov.pet</span>
+                </div>
+              </div>
+
+              <!-- BACK SIDE -->
+              <div class="card-face card-back" id="cardBackSide">
+                <!-- Tricolor Top Ribbon -->
+                <div class="card-top-ribbon">
+                  <div class="color-saffron"></div>
+                  <div class="color-white"></div>
+                  <div class="color-green"></div>
+                </div>
+
+                <!-- Card Header Back -->
+                <div class="card-header-inner back-header">
+                  <div class="back-authority-text">
+                    <span class="hi">भारतीय विशिष्ट पालतू पहचान प्राधिकरण</span>
+                    <span class="en">Unique Pet Identification Authority of India</span>
+                  </div>
+                </div>
+
+                <div class="card-body-back">
+                  <!-- Address Info (Left Side) -->
+                  <div class="card-address-area">
+                    <div class="address-header-hi">पता / Address:</div>
+                    <div class="address-text" id="cardAddressVal">
+                      C/O Rahul Sharma, House No. 42, Bark Street, Sector 7, Pawtown, Delhi - 110001
+                    </div>
+                    
+                    <!-- Disclaimer Text (Hindi & English) -->
+                    <div class="card-disclaimer-text">
+                      <p class="disclaimer-hi">• यह कार्ड केवल पालतू पहचान्न के लिए है।</p>
+                      <p class="disclaimer-hi">• यह भारतीय आधार कार्ड का आधिकारिक दस्तावेज नहीं है।</p>
+                      <p class="disclaimer-hi">• इस कार्ड का उपयोग केवल पहचान एवं स्वास्थ्य रिकॉर्ड के लिए करें।</p>
+                      <p class="disclaimer-en">• This card is for pet identification only.</p>
+                      <p class="disclaimer-en">• This is not an official document of Indian Aadhaar.</p>
+                      <p class="disclaimer-en">• Use this card only for identification and health record purposes.</p>
+                    </div>
+
+                    <div class="back-contact-info">
+                      <span class="phone-lbl">Mob:</span> <span id="cardContactVal">9876543210</span>
+                    </div>
+                  </div>
+
+                  <!-- QR Code (Right Side) -->
+                  <div class="card-qr-area">
+                    <div class="qr-code-wrapper">
+                      <div id="cardQrCode"></div>
+                    </div>
+                    <div class="qr-caption">Scan to Verify</div>
+                  </div>
+                </div>
+
+                <!-- Aadhaar Number (12 Digit) on Back -->
+                <div class="card-number-section-back">
+                  <span class="card-number" id="cardAadhaarNoValBack">2026 9876 3210</span>
+                </div>
+
+                <!-- Card Footer Ribbon Back -->
+                <div class="card-footer-ribbon-back">
+                  <span class="footer-website">www.pawdhaar.gov.pet</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Actions -->
+        <div class="preview-actions">
+          <button type="button" id="flipBtn" class="btn btn-action-card btn-outline"><i class="fa-solid fa-rotate"></i> Flip Card</button>
+          
+          <div class="export-dropdown-container">
+            <button type="button" id="downloadDropdownBtn" class="btn btn-action-card btn-success"><i class="fa-solid fa-download"></i> Download Card <i class="fa-solid fa-chevron-down arrow-down"></i></button>
+            <div class="dropdown-menu" id="downloadMenu">
+              <button type="button" id="downloadFrontBtn"><i class="fa-solid fa-id-card"></i> Front Side (PNG)</button>
+              <button type="button" id="downloadBackBtn"><i class="fa-solid fa-qrcode"></i> Back Side (PNG)</button>
+              <button type="button" id="downloadCombinedBtn"><i class="fa-solid fa-images"></i> Combined Card (PNG)</button>
+            </div>
+          </div>
+          
+          <button type="button" id="printBtn" class="btn btn-action-card btn-info"><i class="fa-solid fa-print"></i> Print Card</button>
+        </div>
+
+        <!-- Printing layout helper container (hidden in UI, visible in @media print) -->
+        <div id="printLayoutContainer" class="print-only-layout"></div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Verification Panel (Shown only when routed via #verify/...) -->
+  <section class="verification-panel" id="verificationPanel" style="display: none;">
+    <div class="verification-card">
+      <div class="verification-header">
+        <i class="fa-solid fa-paw logo-verification"></i>
+        <h2>डिजिटल सत्यापन पोर्टल / Digital Verification Portal</h2>
+        <p>Unique Pet Identification Authority of India</p>
+      </div>
+
+      <div class="verification-body">
+        <div class="status-indicator success">
+          <div class="success-icon-wrap">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h3>सत्यापित / Pawdhaar Verified</h3>
+          <p class="verification-timestamp" id="verificationTime"></p>
+        </div>
+
+        <div class="verified-pet-details">
+          <div class="verified-avatar-wrapper">
+            <div class="verified-avatar" id="verifiedPetAvatar">
+              <i class="fa-solid fa-paw"></i>
+            </div>
+            <div class="verified-badge-label">OFFICIAL COOP VERIFIED</div>
+          </div>
+
+          <div class="details-table">
+            <div class="table-row">
+              <div class="table-cell label">Pawdhaar No. / आधार नंबर</div>
+              <div class="table-cell value number" id="verifAadhaar">XXXX XXXX XXXX</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Pet Name / पालतू का नाम</div>
+              <div class="table-cell value highlight" id="verifName">Rocky</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Pet Type / पालतू श्रेणी</div>
+              <div class="table-cell value" id="verifType">Dog</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Breed / प्रजाति</div>
+              <div class="table-cell value" id="verifBreed">Indie</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Gender / लिंग</div>
+              <div class="table-cell value" id="verifGender">MALE / पुरुष</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Date of Birth / जन्म तिथि</div>
+              <div class="table-cell value" id="verifDob">01/01/2026</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Guardian / अभिभावक</div>
+              <div class="table-cell value" id="verifGuardian">Rahul Sharma</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Contact No. / संपर्क सूत्र</div>
+              <div class="table-cell value" id="verifContact">9876543210</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Vaccination / टीकाकरण</div>
+              <div class="table-cell value" id="verifVaccinated">Done ✅</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell label">Deworming / कृमिमुक्ति</div>
+              <div class="table-cell value" id="verifDewormed">Done ✅</div>
+            </div>
+            <div class="table-row full-row">
+              <div class="table-cell label">Address / पता</div>
+              <div class="table-cell value" id="verifAddress">House No 42, Bark Street, Sector 7, Pawtown, Delhi</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="verification-footer">
+          <p><i class="fa-solid fa-shield-halved"></i> This is a digitally verified identity certificate generated via Pawdhaar. Under no circumstances should this card be considered a government-issued human identification card.</p>
+          <a href="#" class="btn btn-primary" id="goToGeneratorBtn"><i class="fa-solid fa-plus"></i> Create A Pet Pawdhaar</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alert System Notification -->
+  <div class="alert-container" id="alertContainer"></div>
+
+  <!-- Website Footer (Fun purpose, designed by Nirotyay Mukherjee) -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-logo">
+        <i class="fa-solid fa-paw"></i>
+        <span>Pawdhaar</span>
+      </div>
+      <p class="footer-disclaimer">
+        This website is created only for fun purposes and only for pet lovers. Pet owners can create a beautiful custom Aadhaar card for their existing pets and download or save the card if they wish.
+      </p>
+      <div class="footer-author-info">
+        <span>Designed with <i class="fa-solid fa-heart text-danger"></i> by <strong>Nirotyay Mukherjee</strong></span>
+        <a href="https://www.linkedin.com/in/nirotyay-mukherjee-560632230" target="_blank" rel="noopener noreferrer" class="footer-linkedin-btn">
+          <i class="fa-brands fa-linkedin"></i> Connect on LinkedIn
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Main Script -->
+  <script src="app.js"></script>
+</body>
+</html>
